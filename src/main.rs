@@ -24,8 +24,9 @@ use std::path::PathBuf;
 #[cfg(feature = "autostart")]
 use std::process::{Command, Stdio};
 use std::sync::Arc;
+use systemd::is_systemd_used;
 #[cfg(feature = "systemd")]
-use systemd::{get_systemd_env, is_systemd_used, spawn_scope};
+use systemd::{get_systemd_env, spawn_scope};
 use tokio::signal::unix::{SignalKind, signal};
 use tokio::sync::mpsc::{Receiver, Sender};
 use tokio::sync::{Mutex, oneshot};
@@ -351,6 +352,9 @@ async fn start(
 
 	let span = info_span!(parent: None, "cosmic-osd");
 	start_component("cosmic-osd", span, &process_manager, &env_vars).await;
+
+	let span = info_span!(parent: None, "cosmic-osk");
+	start_component("cosmic-osk", span, &process_manager, &env_vars).await;
 
 	let span = info_span!(parent: None, "cosmic-bg");
 	start_component("cosmic-bg", span, &process_manager, &env_vars).await;
